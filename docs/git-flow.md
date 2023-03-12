@@ -83,7 +83,7 @@ git co develop
 
 Создайте свою ветку:
 ```bash
-git checkout -b BS-002-create-something
+git checkout -b BS-001-create-something
 ```
 
 Внесите изменения в код и посмотрите, что покажет Git:
@@ -99,7 +99,7 @@ git diff ./file_name.py
 Сохраните результаты вашей работы:
 ```bash
 git add .
-git commit -m 'BS-002 Создать кое-что'
+git commit -m 'BS-001 Создать кое-что'
 ```
 
 Когда вы собираетесь добавить ещё изменения в тот же коммит (новый, а не последний в `develop`) - используйте `amend`:
@@ -122,19 +122,19 @@ git push -f origin HEAD
 ```bash
 git co develop
 git pod
-git co BS-002-add-gitflow-documentation-to-readme
+git co BS-001-add-gitflow-documentation-to-readme
 git rd
-git push -f origin BS-002-add-gitflow-documentation-to-readme
+git push -f origin BS-001-add-gitflow-documentation-to-readme
 ```
 
 ### 2. Работа с трекером задач.
-Присваивайте задачам в Trello префикс вида `BS-002-`. Например, задача в трелло называется:
-`BS-002 Добавить описание Gitflow`. Называем ветку `BS-002-add-gitflow-documentation-to-readme`.
+Присваивайте задачам в Trello префикс вида `BS-001-`. Например, задача в трелло называется:
+`BS-001 Добавить описание Gitflow`. Называем ветку `BS-001-add-gitflow-documentation-to-readme`.
 
 Commit changes in your current task:
 ```bash
 git add .
-git commit -m 'BS-002 Добавить описание Gitflow'
+git commit -m 'BS-001 Добавить описание Gitflow'
 ```
 
 После того, как коммит сделан, изменения сохранены. Нужно обновить вашу ветку:
@@ -145,13 +145,13 @@ git pod
 
 Обновите вашу ветку к текущей голове ветки `develop`:
 ```bash
-git co BS-002-add-gitflow-documentation-to-readme
+git co BS-001-add-gitflow-documentation-to-readme
 git rd
 ```
 
 Теперь можно пушить ветку в репозиторий
 ```bash
-git push -f origin BS-002-add-gitflow-documentation-to-readme
+git push -f origin BS-001-add-gitflow-documentation-to-readme
 ```
 
 перейдите в раздел "[Пулл-реквесты](https://github.com/bsa7/baseg/pulls)", создайте пулл-реквест, назначьте ревьюверов, проверьте код.
