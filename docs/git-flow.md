@@ -155,6 +155,7 @@ git push -f origin BS-001-add-gitflow-documentation-to-readme
 ```
 
 перейдите в раздел "[Пулл-реквесты](https://github.com/bsa7/baseg/pulls)", создайте пулл-реквест, назначьте ревьюверов, проверьте код.
+![Создание pr](./assets/creating-pr.png)
 
 
 ## Разрешение конфликтов правок
