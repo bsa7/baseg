@@ -5,6 +5,10 @@ class Cursor:
   def __init__(self, results = None):
     self.__results = results or []
 
+  def __len__(self):
+    ''' Возвращает размер выборки '''
+    return len(self.__results)
+
   def sort(self, _rules):
     ''' Сортирует (или нет) результаты на основе заданного правила '''
     # По факту пока не сортирует, но в тестах это пока не нужно
