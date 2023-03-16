@@ -13,9 +13,9 @@ class TestUser(unittest.TestCase):
     ApplicationRecord.collection.cleanup()
 
   def test_receive_empty_wallet_replenishments(self):
-    ''' Проверяет получение пустого списка пополнения кошелька для пользователя '''
-    user1 = User.insert_one(id = 123456)
-    user2 = User.insert_one(id = 123457)
+    ''' Проверяет получение списка пополнения кошелька для пользователя '''
+    user1 = User.insert_one(_id = 123456)
+    user2 = User.insert_one(_id = 123457)
     WalletReplenishment.insert_one(user_id = 123456, rep_date = current_timestamp(), monetary = 100500)
     WalletReplenishment.insert_one(user_id = 123456, rep_date = current_timestamp(), monetary = 100)
     WalletReplenishment.insert_one(user_id = 123457, rep_date = current_timestamp(), monetary = 500)
