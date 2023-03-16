@@ -10,9 +10,9 @@ if len(sys.argv) < 2:
 file_name = sys.argv[1]
 
 print(f'=============== Файл {file_name} ===============')
+
 table = pq.read_table(file_name)
 schema = table.schema
-
 print(f'{schema=}')
 
 df = table.to_pandas()

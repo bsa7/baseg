@@ -5,24 +5,24 @@ services:
     build:
       context: .
       dockerfile: stages/development/Dockerfile.mongo
-    container_name: app_mongo
+    container_name: baseg_mongodb
     environment:
-      MONGO_INITDB_DATABASE: "smlp_development"
-      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/app_mongo_root_password
+      MONGO_INITDB_DATABASE: "baseg_development"
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/baseg_mongodb_root_password
       MONGO_INITDB_ROOT_USERNAME: "root"
-      MONGO_PASSWORD_FILE: /run/secrets/app_mongo_password
+      MONGO_PASSWORD_FILE: /run/secrets/baseg_mongodb_password
       MONGO_USER: "admin"
     secrets:
-      - app_mongo_password
-      - app_mongo_root_password
+      - baseg_mongodb_password
+      - baseg_mongodb_root_password
     volumes:
       - mongo:/data/db
     network_mode: host
 
 secrets:
-  app_mongo_password:
+  baseg_mongodb_password:
     file: ./stages/development/mongo/password
-  app_mongo_root_password:
+  baseg_mongodb_root_password:
     file: ./stages/development/mongo/root_password
 
 volumes:
