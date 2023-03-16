@@ -1,5 +1,6 @@
 ''' This file contains ApplicationRecord abstract class definition '''
 from app.lib.service_factory import ServiceFactory
+from pymongo.write_concern import WriteConcern
 
 class ApplicationRecord():
   ''' This abstract class contains base methods for data operation in mongo db '''
@@ -58,7 +59,13 @@ class ApplicationRecord():
     return cls.collection.update_many(filter_attributes, { '$unset': unset_attributes })
 
   @classmethod
-  def insert_many(cls, records: list[dict]):
-    ''' Обновляет несколько существующих записей или создаёт новые, записи идентифицируются по _id '''
+  def insert_many(cls, records: list[dict], force = False):
+    ''' Обновляет несколько существующих записей или создаёт новые, записи идентифицируются по _id
+        Если указан ключ force = True, то можно вставить записи с уже существующим _id
+    '''
     records = [{ 'model': cls.__name__, **record } for record in records]
-    return cls.collection.insert_many(records, ordered = False)
+    options = {}
+    if force:
+      options['write_concern'] = WriteConcern(w = 0)
+
+    return cls.collection.with_options(options).insert_many(records, ordered = False)
