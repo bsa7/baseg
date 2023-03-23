@@ -1,6 +1,9 @@
 version: '3.7'
 
 services:
+  apache_spark:
+    image: bitnami/spark
+
   mongo:
     build:
       context: .
