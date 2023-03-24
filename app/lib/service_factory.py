@@ -1,4 +1,5 @@
 ''' Этот файл содержит определение класса ServiceFactory '''
+from pyspark.sql import SparkSession
 from app.lib.singleton import Singleton
 from app.lib.env import Env
 from app.lib.mongo_client import MongoClient
@@ -10,6 +11,12 @@ class ServiceFactory(metaclass = Singleton):
   def mongo_client(self):
     ''' Этот метод возвращает класс для клиента MongoDB '''
     return self.__client_by_env_name(production = MongoClient, test = TestMongoClient)
+
+  def spark(self, app_name):
+    ''' Этот метод возвращает сессию Apache Spark '''
+    return SparkSession.builder.appName(app_name).getOrCreate()
+
+  # Приватные методы класса
 
   def __client_by_env_name(self, development = None, production = None, test = None):
     ''' Этот метод возвращает один из предложенных вариантов классов, в зависимости от текущего окружения '''
