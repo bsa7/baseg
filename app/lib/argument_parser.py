@@ -20,7 +20,7 @@ class ArgumentParser:
   def argument_safe(self, argument_name: str, error_message: str = None):
     ''' Этот метод безопасно получает значение аргумента или райзит ошибку '''
     argument_value = self.arguments.get(argument_name)
-    if argument_value is None:
+    if error_message is not None and argument_value is None:
       raise ValueError(error_message)
 
     return argument_value
