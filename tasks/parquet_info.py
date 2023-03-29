@@ -1,20 +1,20 @@
 ''' Этот файл содержит код, который выдаёт инфу по parquet-файлу с данными '''
 # Для запуска нужно указать местоположение parquet-файла с данными
-# Например: python ./tasks/parquet_info.py ../baseg-shared/data/wallet_urfu.parquet.gzip
+# Например: python ./tasks/parquet_info.py input_file=../baseg-shared/data/wallet_urfu.parquet.gzip
 import sys
 import pyarrow.parquet as pq
+from app.lib.argument_parser import ArgumentParser
 
-if len(sys.argv) < 2:
-  raise ValueError('Ошибка! Вы должны указать имя файла первым аргументом!')
+argument_parser = ArgumentParser()
 
-file_name = sys.argv[1]
+input_file_name = argument_parser.argument_safe('input_file', 'Ошибка! Вы должны указать имя файла с данными о пополнении баланса!')
 
-print(f'=============== Файл {file_name} ===============')
-
-table = pq.read_table(file_name)
+table = pq.read_table(input_file_name)
 schema = table.schema
 print(f'{schema=}')
 
 df = table.to_pandas()
-print(f'{df.head()=}')
-print(f'{df.tail()=}')
+print('=============== head ===============')
+print(df.head())
+print('================== tail ===================')
+print(df.tail())
