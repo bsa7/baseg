@@ -11,8 +11,8 @@ from app.lib.argument_parser import ArgumentParser
 
 argument_parser = ArgumentParser()
 
-path_in = argument_parser.argument_safe('path_in','Ошибка! Вы должны указать имя файла с данными о пополнении баланса!')
-path_out = argument_parser.argument_safe('path_out')
+path_in = argument_parser.argument_safe('path_in','Ошибка! Вы должны указать путь до датасета!')
+path_out = argument_parser.argument_safe('path_out', 'Ошибка! Вы должны указать путь, куда должен сохранится датасет!')
 date = str(argument_parser.argument_safe('req_date', 'Ошибка! Вы должны указать дату, на которую собираются фичи!'))
 
 req_date = pd.to_datetime(date)
