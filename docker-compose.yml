@@ -4,6 +4,18 @@ services:
   apache_spark:
     image: bitnami/spark
 
+  app:
+    build:
+      context: .
+      dockerfile: stages/development/Dockerfile.api
+    image: baseg-development
+    volumes:
+      - .:/home/pn/app:Z
+      - ../baseg-shared:/home/pn/baseg-shared:Z
+    network_mode: host
+    environment:
+      - API_ENV=development
+
   mongo:
     build:
       context: .
