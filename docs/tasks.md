@@ -45,9 +45,5 @@
 
 После этого можно запустить Python скрипт следующим образом:
 ```bash
-./docker/run_task.sh "tasks.parquet_info input_file=../data/wallet_urfu.parquet.gzip"
+./docker/run "python -m tasks.parquet_info input_file=../data/wallet_urfu.parquet.gzip"
 ```
-
-Здесь:
-* `./docker/run_task.sh` - скрипт, запускающий Python скрипт в докер контейнере (команда python -m ...)
-* `"tasks.parquet_info input_file=../baseg-shared/data/wallet_urfu.parquet.gzip"` - параметры, которые подставляются вместо троеточия.
