@@ -6,15 +6,17 @@ class RfmCast:
   def __init__(self, source_dataframe):
     self.__df = source_dataframe
 
-  def call(self, target_date: str):
+  def call(self, start_date: str, finish_date: str):
     ''' Этот метод возвращает датафрейм [client_id, recency, frequency, monetary] '''
     # Для вычисления разности дат, добавляем колонку `date` к исходному датафрейму
-    df = self.__df.withColumn('target_date', sql_functions.to_date(sql_functions.lit(target_date), 'dd.MM.yyyy'))
+    df = self.__df. \
+      withColumn('start_date', sql_functions.to_date(sql_functions.lit(start_date), 'dd.MM.yyyy')). \
+      withColumn('finish_date', sql_functions.to_date(sql_functions.lit(finish_date), 'dd.MM.yyyy'))
 
     # Создаём датафрейм с признаком недавности (r), частоты (f) и денежности (m) клиента:
     # r высчитана в днях, f - в количестве пополнений, m - в абстрактных еденицах суммы
-    return df.filter(df.rep_date <= df.target_date) \
-      .withColumn('date_diff', sql_functions.datediff('target_date', 'rep_date')) \
+    return df.filter((df.rep_date >= df.start_date) & (df.rep_date <= df.finish_date)) \
+      .withColumn('date_diff', sql_functions.datediff('finish_date', 'rep_date')) \
       .groupBy('client_id') \
       .agg(
         sql_functions.min('date_diff').alias('r'), \

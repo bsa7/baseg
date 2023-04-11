@@ -1,6 +1,6 @@
 ''' Этот файл содержит код, который выдаёт инфу по parquet-файлу с данными '''
 # Для запуска нужно указать местоположение parquet-файла с данными
-# Например: python -m ./tasks/parquet_info.py input_file=../baseg-shared/data/wallet_urfu.parquet.gzip
+# Например: python -m tasks.parquet_info input_file=../baseg-shared/data/wallet_urfu.parquet.gzip
 import sys
 import pyarrow.parquet as pq
 from app.lib.argument_parser import ArgumentParser
