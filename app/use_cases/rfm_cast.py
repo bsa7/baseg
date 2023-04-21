@@ -16,9 +16,9 @@ class RfmCast:
     # Создаём датафрейм с признаком недавности (r), частоты (f) и денежности (m) клиента:
     # r высчитана в днях, f - в количестве пополнений, m - в абстрактных еденицах суммы
     return df.filter((df.rep_date >= df.start_date) & (df.rep_date <= df.finish_date)) \
-      .withColumn('date_diff', sql_functions.datediff('finish_date', 'rep_date')) \
+      .withColumn('date_diff', sql_functions.datediff('rep_date', 'start_date')) \
       .groupBy('client_id') \
       .agg(
-        sql_functions.min('date_diff').alias('r'), \
+        sql_functions.max('date_diff').alias('r'), \
         sql_functions.count('date_diff').alias('f'), \
         sql_functions.sum('monetary').alias('m'))
