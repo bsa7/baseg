@@ -21,8 +21,8 @@ print(f'{argument_parser.arguments=}')
 
 # Парсим аргументы, переданные в командной строке
 input_file_name = argument_parser.argument_safe('input_file', 'Ошибка! Вы должны указать имя файла с данными о пополнении баланса!')
-start_date = argument_parser.argument_safe('start_date', 'Ошибка! Вы должны указать дату, начиная с которой нужно найти признаки')
-finish_date = argument_parser.argument_safe('finish_date', 'Ошибка! Вы должны указать дату, на которую нужно найти признаки')
+start_date = argument_parser.argument_safe('start_date', 'Ошибка! Вы должны указать дату в формате dd.mm.yyyy, начиная с которой нужно найти признаки')
+finish_date = argument_parser.argument_safe('finish_date', 'Ошибка! Вы должны указать дату в формате dd.mm.yyyy, на которую нужно найти признаки')
 output_file_name = argument_parser.argument_safe('output_file', 'Ошибка! Вы должны указать имя результирующего файла!')
 
 print(f'=============== Обрабатывается файл {input_file_name} ===============')

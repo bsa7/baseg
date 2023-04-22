@@ -4,9 +4,12 @@
 # Параметры скрипта:
 #   * input_file - путь к parquet-файлу с историей пополнений
 #   * sample_size - количество точек в итоговой визуализации (если все комп не тянет)
+#   * feature1 - признак 1 (из списка r, f, m, i, d)
+#   * feature2 - признак 1 (из списка r, f, m, i, d)
+#   * feature3 - признак 1 (из списка r, f, m, i, d)
 # Пример запуска:
 # Обратите внимание, что для файлов используется папка ../data - снаружи текущего репозитория
-# python -m tasks.rfm_visualization input_file=../baseg-shared/result.parquet sample_size=100000
+# python -m tasks.rfm_visualization input_file=../baseg-shared/result.parquet sample_size=100000 feature1=r feature2=f feature3=m
 # или
 # ./docker/run "python -m tasks.rfm_visualization input_file=../baseg-shared/result.parquet"
 
@@ -23,6 +26,9 @@ print(f'{argument_parser.arguments=}')
 
 input_file_name = argument_parser.argument_safe('input_file', 'Ошибка! Вы должны указать имя файла с данными о пополнении баланса!')
 sample_size = argument_parser.argument_safe('sample_size')
+feature1 = argument_parser.argument_safe('feature1')
+feature2 = argument_parser.argument_safe('feature2')
+feature3 = argument_parser.argument_safe('feature3')
 
 print(f'=============== Обрабатывается файл {input_file_name} ===============')
 
@@ -37,11 +43,11 @@ if sample_size is not None:
 fig = plt.figure()
 axs = fig.add_subplot(projection = '3d')
 
-axs.scatter(plt_df['r'], plt_df['f'], plt_df['m'])
-axs.set_xlabel('r')
-axs.set_ylabel('f')
-axs.set_zlabel('m')
-axs.set_title('r / f / m')
+axs.scatter(plt_df[feature1], plt_df[feature2], plt_df[feature3])
+axs.set_xlabel(feature1)
+axs.set_ylabel(feature2)
+axs.set_zlabel(feature3)
+axs.set_title(f'{feature1} / {feature2} / {feature3}')
 print('======================')
 plt.show()
 
