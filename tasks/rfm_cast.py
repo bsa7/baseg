@@ -34,11 +34,12 @@ df = Parquet().read_to_spark_df(input_file_name, spark).withColumnRenamed('partn
 # Создаём датафрейм с признаками на даты с start_date по finish_date
 recency_df = RfmCast(df).call(start_date, finish_date)
 
-recency_df.show(20)
+recency_pd_df = recency_df.toPandas()
+print(recency_pd_df.head())
 print(f'Всего уникальных клиентов: {recency_df.count()}')
 
 # Пишем результат в указанный файл output_file
-Parquet().write(recency_df.toPandas(), output_file_name)
+Parquet().write(recency_pd_df, output_file_name)
 print(f'Итоговый датафрейм сохранён в файле {output_file_name}')
 
 # Завершаем сессию Apache Spark

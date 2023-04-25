@@ -1,7 +1,6 @@
 ''' Этот файл содержит реализацию класса RfmCast '''
 from app.lib.service_factory import ServiceFactory
 from app.lib.utils import parse_date, timestamp_to_formatted_date
-
 class RfmCast:
   ''' Этот класс создаёт дата фрейм с метками recency, frequency, monetary '''
   def __init__(self, source_dataframe):
@@ -26,22 +25,58 @@ class RfmCast:
 
     df.createOrReplaceTempView('replenishments')
 
+    # DATEDIFF('{self.__formatted_date(finish_date)}', MAX(rep_date)) AS r,
+    # COUNT(*) AS f,
+    # SUM(monetary) AS m,
+    # COUNT(*) / DATEDIFF('{self.__formatted_date(finish_date)}', '{self.__formatted_date(start_date)}') AS k,
+    # DATEDIFF(MAX(rep_date), MIN(rep_date)) AS d,
+    # SUM(1 - DATEDIFF('{self.__formatted_date(finish_date)}', rep_date) / 90 * 0.025 * monetary) as i,
+
+    # sql = f"""--beginsql
+    #   SELECT
+    #     client_id,
+    #     ARRAY_AGG(DATEDIFF('{self.__formatted_date(finish_date)}', rep_date)) AS rep_dates,
+    #     ARRAY_AGG(monetary) AS monetaries
+    #   FROM replenishments
+    #   WHERE rep_date >= '{self.__formatted_date(start_date)}'
+    #     AND rep_date <= '{self.__formatted_date(finish_date)}'
+    #   GROUP BY
+    #     client_id
+    # --endsql"""
+
+    # sql = f"""--beginsql
+    #   SELECT
+    #     client_id,
+    #     DATEDIFF(MAX(rep_date), MIN(rep_date)) AS d,
+    #     SUM(1 - DATEDIFF('{self.__formatted_date(finish_date)}', rep_date) / 90 * 0.025 * monetary) as i,
+    #     DATEDIFF('{self.__formatted_date(finish_date)}', MAX(rep_date)) AS r,
+    #     COUNT(*) AS f,
+    #     SUM(monetary) AS m
+    #   FROM replenishments
+    #   WHERE rep_date >= '{self.__formatted_date(start_date)}'
+    #     AND rep_date <= '{self.__formatted_date(finish_date)}'
+    #   GROUP BY
+    #     client_id
+    # --endsql"""
+
     sql = f"""--beginsql
       SELECT
         client_id,
-        DATEDIFF(MAX(rep_date), MIN(rep_date)) AS d,                                                      # Срок жизни клиента
-        SUM(1 - DATEDIFF('{self.__formatted_date(finish_date)}', rep_date) / 90 * 0.025 * monetary) as i, # Сумма пополнений с учётом коэффициента актуальности
-        DATEDIFF('{self.__formatted_date(finish_date)}', MAX(rep_date)) AS r,                             # Дней с момента последнего пополнения
-        COUNT(*) AS f,                                                                                    # Количество пополнений
-        SUM(monetary) AS m                                                                                # monetary
+        DATEDIFF(MAX(rep_date), MIN(rep_date)) AS d,
+        SUM(1 - DATEDIFF('{self.__formatted_date(finish_date)}', rep_date) / 90 * 0.025 * monetary) as i,
+        DATEDIFF('{self.__formatted_date(finish_date)}', MAX(rep_date)) AS r,
+        COUNT(*) AS f,
+        LOG(SUM(monetary)) AS m
       FROM replenishments
       WHERE rep_date >= '{self.__formatted_date(start_date)}'
         AND rep_date <= '{self.__formatted_date(finish_date)}'
+        AND client_id != 23450
       GROUP BY
         client_id
     --endsql"""
 
-    return self.__spark.sql(sql)
+    result = self.__spark.sql(sql)
+    return result
 
   def __formatted_date(self, date: str):
     ''' Конвертирует дату в формате dd.mm.yyyy в формат sql yyyy-mm-dd '''
