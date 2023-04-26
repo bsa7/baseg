@@ -14,7 +14,7 @@ class ServiceFactory(metaclass = Singleton):
 
   def spark(self, app_name):
     ''' Этот метод возвращает сессию Apache Spark '''
-    return SparkSession.builder.appName(app_name).getOrCreate()
+    return SparkSession.builder.appName(app_name).config('spark.memory.offHeap.size', '20g').getOrCreate()
 
   # Приватные методы класса
 

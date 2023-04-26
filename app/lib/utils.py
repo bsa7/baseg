@@ -13,6 +13,10 @@ def timestamp_to_formatted_date(timestamp: int, date_format = '%Y-%m-%d') -> str
       2020-03-30 '''
   return datetime.utcfromtimestamp(timestamp / 1000.0).strftime(date_format)
 
+def parse_date(date: str, date_format = '%d.%m.%Y'):
+  ''' Парсит строку в заданном формате в unix timestamp (в миллисекундах) '''
+  return datetime.strptime(date, date_format).timestamp() * 1000
+
 def current_timestamp() -> int:
   ''' Этот метод возвращает текущее время в виде временного штампа Unix (в миллисекундах) '''
   return int(datetime.now().timestamp() * 1000)
