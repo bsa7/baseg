@@ -14,6 +14,7 @@ from app.lib.argument_parser import ArgumentParser
 from app.lib.service_factory import ServiceFactory
 from app.lib.parquet import Parquet
 import visual.easyplot as vis
+import visual.dashboard as board
 
 argument_parser = ArgumentParser()
 
@@ -34,8 +35,10 @@ plt_df = df.filter(df.sum_monetary_w_coefficient < 3e-8).toPandas()
 if sample_size is not None:
     plt_df = plt_df.sample(n=int(sample_size))
 
-vis.scat3d(plt_df, 'sum_monetary_coefficient', 'sum_monetary_w_coefficient', 'between_last_today')
-vis.scat2d(plt_df, 'sum_monetary_coefficient', 'sum_monetary_w_coefficient')
+dashboard = board.Dashboard()
+fig = vis.scat3d(plt_df, 'sum_monetary_coefficient', 'sum_monetary_w_coefficient', 'between_last_today', show=False)
+dashboard.add_graph(fig, fig, fig)
+dashboard.start()
 
 # Завершаем сессию Apache Spark
 spark.stop()

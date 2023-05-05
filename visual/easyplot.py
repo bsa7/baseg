@@ -12,21 +12,16 @@ import plotly.express as px
 # при визуализации данных
 
 
-def scat2d(df, x_col, y_col, color=None):
-    fig = px.scatter(df,
-                     x=x_col,
-                     y=y_col,
-                     color=color)
-    fig.show()
+def scat2d(df, x, y, color=None, show=True):
+    fig = px.scatter(df, x=x, y=y, color=color, width=800, height=600)
+    fig.update_traces(marker_size=2)
+    return fig
 
 
-def scat3d(df, x_col, y_col, z_col, color=None):
-    fig = px.scatter_3d(df,
-                        x=x_col,
-                        y=y_col,
-                        z=z_col,
-                        color=color)
-    fig.show()
+def scat3d(df, x, y, z, color=None, show=True):
+    fig = px.scatter_3d(df, x=x, y=y, z=z, color=color, width=800, height=600)
+    fig.update_traces(marker_size=2)
+    return fig
 
 
 def box():
