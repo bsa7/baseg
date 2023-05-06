@@ -35,7 +35,7 @@ print(f'=============== Обрабатывается файл {input_file_name} 
 spark = ServiceFactory().spark('RMFCast')
 df = Parquet().read_to_spark_df(input_file_name, spark).withColumnRenamed('partner', 'client_id')
 
-plt_df = df.filter(df.m < 1e-6).toPandas()
+plt_df = df.filter(df.absolute_monetary_sum < 1e7).toPandas()
 
 if sample_size is not None:
   plt_df = plt_df.sample(n = int(sample_size))

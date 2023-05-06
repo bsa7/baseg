@@ -7,3 +7,5 @@ coverage/report.xml
 tmp
 .idea
 /.idea/
+.pdb-pyhist
+/data/

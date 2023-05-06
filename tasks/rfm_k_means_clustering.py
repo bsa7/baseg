@@ -6,26 +6,34 @@
 # python -m tasks.rfm_k_means_clustering input_file=../baseg-shared/result.parquet sample_size=100000 n_clusters=4
 
 import matplotlib.pyplot as plt
+import pandas as pd
 from app.lib.argument_parser import ArgumentParser
 from app.lib.service_factory import ServiceFactory
 from app.lib.parquet import Parquet
 from sklearn.cluster import KMeans
+from sklearn.preprocessing import minmax_scale
 
 argument_parser = ArgumentParser()
 input_file_name = argument_parser.argument_safe('input_file', 'Ошибка! Вы должны указать имя файла с rfm признаками')
 sample_size = argument_parser.argument_safe('sample_size')
 n_clusters = argument_parser.argument_safe('n_clusters') or '4'
+feature1 = argument_parser.argument_safe('feature1')
+feature2 = argument_parser.argument_safe('feature2')
+feature3 = argument_parser.argument_safe('feature3')
+
 print(f'=============== Обрабатывается файл {input_file_name} ===============')
 
 spark = ServiceFactory().spark('RMF-KMeans')
 df = Parquet().read_to_spark_df(input_file_name, spark)
-df = df.filter(df.m < 1e-7).toPandas()
+df = df.filter((df.absolute_monetary_sum < 1e7) & (df.client_lifetime > 1)).toPandas()
 
 kmeans = KMeans(n_clusters = int(n_clusters))
 print('--------------------------- Начали kmeans.fit --------------------------------')
-df_copy = df[['r', 'f', 'm']]
-print('df_copy.head()')
-print(f'{df_copy.head()}')
+df_copy = pd.DataFrame(minmax_scale(df[[feature1, feature2, feature3]]))
+print('------------------------ df_copy.head() --------------------------------------')
+print(df_copy.head())
+print('----------------------- df_copy.info() ---------------------------------------')
+print(df_copy.info())
 kmeans.fit(df_copy)
 print('--------------------------- Завершили kmeans.fit --------------------------------')
 df['labels'] = kmeans.labels_
@@ -43,11 +51,11 @@ axs = fig.add_subplot(projection = '3d')
 if sample_size is not None:
   df = df.sample(n = int(sample_size))
 
-axs.scatter(df['r'], df['f'], df['m'], c = df['labels'])
-axs.set_xlabel('r')
-axs.set_ylabel('f')
-axs.set_zlabel('m')
-axs.set_title('r / f / m')
+axs.scatter(df[feature1], df[feature2], df[feature3], c = df['labels'])
+axs.set_xlabel(feature1)
+axs.set_ylabel(feature2)
+axs.set_zlabel(feature3)
+axs.set_title(f'{feature1} / {feature2} / {feature3}')
 plt.show()
 
 # Завершаем сессию Apache Spark
