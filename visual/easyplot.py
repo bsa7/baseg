@@ -24,9 +24,16 @@ def scat3d(df, x, y, z, color=None, show=True):
     return fig
 
 
-def box():
-    pass
+#Выводить доп. точки: points ='all', 'outliers', 'suspectedoutliers', False
+def box(df, y, x = None,  color=None, points=False):
+    fig = px.box(df, x=x, y=y, color=color, points=points, width=800, height=600)
+    fig.update_traces(quartilemethod="linear")  # or "inclusive", or "exclusive"
+    return fig
 
 
-def pie():
-    pass
+#values - численные значения, names - группы деления, color - подгруппы
+def pie(df, values, names, color=None, show=True):
+    fig = px.pie(df, values=values, names=names, color=color, width=800, height=600)
+    return fig
+
+
