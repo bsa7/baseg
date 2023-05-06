@@ -1,3 +1,7 @@
+"""
+Этот класс используется для инициализации дашборда и добавления на него графиков
+"""
+
 from dash import Dash, dcc, html, Input, Output
 
 
@@ -7,10 +11,19 @@ class Dashboard:
         self.graphs = []
 
     def add_graph(self, *figures):
+        """
+        Добавляет график на дашборд
+
+        Args:
+            *figures: px.<plot_type>
+        """
         for fig in figures:
             self.graphs.append(dcc.Graph(figure=fig))
 
     def start(self):
+        """
+        Создает дашборд в браузере
+        """
         self._build_layout()
         self.app.run_server(debug=True)
 
@@ -23,7 +36,7 @@ class Dashboard:
 
             graph_container = html.Div(
                 style={
-                    #"display": "flex",
+                    # "display": "flex",
                     "align-items": "center",
                     "justify-content": "center",
                     "outline": "1px solid #000",

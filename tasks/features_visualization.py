@@ -16,6 +16,7 @@ from app.lib.parquet import Parquet
 import visual.easyplot as vis
 import visual.dashboard as board
 
+dashboard = board.Dashboard()
 argument_parser = ArgumentParser()
 
 print(f'{argument_parser.arguments=}')
@@ -35,9 +36,12 @@ plt_df = df.filter(df.sum_monetary_w_coefficient < 3e-8).toPandas()
 if sample_size is not None:
     plt_df = plt_df.sample(n=int(sample_size))
 
-dashboard = board.Dashboard()
-fig = vis.scat3d(plt_df, 'sum_monetary_coefficient', 'sum_monetary_w_coefficient', 'between_last_today', show=False)
-dashboard.add_graph(fig, fig, fig)
+#Пример использования дашборда
+scat3 = vis.scat3d(plt_df, 'sum_monetary_coefficient', 'sum_monetary_w_coefficient', 'between_last_today')
+scat2 = vis.scat2d(plt_df, 'sum_monetary_coefficient', 'sum_monetary_w_coefficient')
+box = vis.box(plt_df, 'sum_monetary_coefficient')
+pie = vis.pie(plt_df[:10], 'sum_monetary_coefficient', 'client_id')
+dashboard.add_graph(scat3, scat2, box, pie)
 dashboard.start()
 
 # Завершаем сессию Apache Spark
