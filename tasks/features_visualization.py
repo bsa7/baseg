@@ -13,8 +13,8 @@ from pyspark.sql import functions as sql_functions
 from app.lib.argument_parser import ArgumentParser
 from app.lib.service_factory import ServiceFactory
 from app.lib.parquet import Parquet
-import visual.easyplot as vis
-import visual.dashboard as board
+from app.use_cases.visual import easyplot as vis
+from app.use_cases.visual import dashboard as board
 
 dashboard = board.Dashboard()
 argument_parser = ArgumentParser()
