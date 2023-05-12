@@ -28,12 +28,17 @@ class RfmCast:
 
     sql = f"""--beginsql
       SELECT
-        client_id,
-        DATEDIFF(MAX(rep_date), MIN(rep_date)) AS d,                                                      # Срок жизни клиента
-        SUM(1 - DATEDIFF('{self.__formatted_date(finish_date)}', rep_date) / 90 * 0.025 * monetary) as i, # Сумма пополнений с учётом коэффициента актуальности
-        DATEDIFF('{self.__formatted_date(finish_date)}', MAX(rep_date)) AS r,                             # Дней с момента последнего пополнения
-        COUNT(*) AS f,                                                                                    # Количество пополнений
-        SUM(monetary) AS m                                                                                # monetary
+        client_id,                                                                                         -- id клиента
+        DATEDIFF(MAX(rep_date), MIN(rep_date)) + 1 AS client_lifetime,                                     -- Срок жизни клиента, дней
+        SUM(1 - DATEDIFF('{self.__formatted_date(finish_date)}', rep_date) / 90 * 0.025 * monetary) as i,  -- Сумма пополнений с учётом коэффициента актуальности
+        DATEDIFF('{self.__formatted_date(finish_date)}', MAX(rep_date)) AS recency,                        -- Дней с момента последнего пополнения
+        COUNT(rep_date) AS frequency,                                                                      -- Количество пополнений
+        SUM(monetary) AS monetary_sum,                                                                     -- monetary в нормализованном виде
+        ROUND(SUM(monetary * 5e14), 2) AS absolute_monetary_sum,                                           -- monetary в рублях (умноженная на 5e14)
+        ROUND(SUM(monetary * 5e14) / (DATEDIFF(MAX(rep_date), MIN(rep_date)) + 1), 2) AS monetary_per_day, -- monetary в рублях за день жизни клиента
+        ROUND(SUM(monetary * 5e14) / COUNT(rep_date), 2) AS monetary_per_replenishment,                    -- monetary в рублях за одно пополнение
+        COALESCE(ROUND(SQRT(VARIANCE(monetary)) * 5e14, 2), 0) AS standard_deviation,                      -- стандартное среднеквадратичное отклонение
+        ROUND(AVG(monetary * 5e14), 2) AS monetary_average                                                 -- средняя monetary, руб.
       FROM replenishments
       WHERE rep_date >= '{self.__formatted_date(start_date)}'
         AND rep_date <= '{self.__formatted_date(finish_date)}'
