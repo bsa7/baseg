@@ -17,8 +17,9 @@ class ServiceFactory(metaclass = Singleton):
     return SparkSession.\
       builder. \
       appName(app_name). \
-      config('spark.executor.memory', '10g'). \
-      config('spark.driver.memory', '10g'). \
+      config('spark.executor.memory', '12g'). \
+      config('spark.driver.memory', '4g'). \
+      config('spark.driver.maxResultSize', '4g'). \
       getOrCreate()
 
   # Приватные методы класса

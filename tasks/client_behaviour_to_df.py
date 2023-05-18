@@ -8,7 +8,7 @@ import pandas as pd
 import pdb
 import sys
 from datetime import date
-from tslearn.clustering import TimeSeriesKMeans
+# from tslearn.clustering import TimeSeriesKMeans
 
 from app.lib.argument_parser import ArgumentParser
 from app.lib.service_factory import ServiceFactory
@@ -21,7 +21,7 @@ output_file_name = argument_parser.argument_safe('output_file', 'Ошибка! �
 start_date = argument_parser.argument_safe('start_date', 'Ошибка! Вы должны указать дату в формате dd.mm.yyyy, начиная с которой нужно найти признаки')
 finish_date = argument_parser.argument_safe('finish_date', 'Ошибка! Вы должны указать дату в формате dd.mm.yyyy, на которую нужно найти признаки')
 monetary_const = argument_parser.argument_safe('monetary_const', default = 5e14)
-spark = ServiceFactory().spark('Visualize client behaviour')
+spark = ServiceFactory().spark('ClientBehaviourToDf')
 df = Parquet().read_to_spark_df(input_file_name, spark)
 df.createOrReplaceTempView('replenishments')
 
@@ -34,51 +34,37 @@ def filter_sql(start_date: str, finish_date: str, monetary_const: float):
   return f"""--beginsql
     SELECT
       client_id,
-      ARRAY_AGG(rep_date) AS rep_dates,
-      ARRAY_AGG(per_day_monetary) AS per_day_monetaries,
-      ARRAY_AGG(per_day_replenishment_count) AS per_day_replenishment_counts
+      ARRAY_AGG(rep_day) AS rep_indices,
+      ARRAY_AGG(per_day_monetary) AS rep_values
     FROM (
       SELECT
         partner AS client_id,
-        rep_date,
-        SUM(monetary * {monetary_const}) AS per_day_monetary,
-        COUNT(rep_date) AS per_day_replenishment_count
+        DATEDIFF(day, '{formatted_date(start_date)}', rep_date) AS rep_day,
+        SUM(monetary * {monetary_const}) AS per_day_monetary
       FROM replenishments
       WHERE rep_date >= '{formatted_date(start_date)}'
         AND rep_date <= '{formatted_date(finish_date)}'
       GROUP BY
         client_id,
         rep_date
+      ORDER BY
+        client_id,
+        rep_date
     )
-    GROUP BY client_id
+    GROUP BY
+      client_id
   --endsql"""
 
 sql = filter_sql(start_date, finish_date, monetary_const=monetary_const)
 filtered_df = spark.sql(sql)
 
-start_date = date.fromtimestamp(parse_date(start_date) / 1000)
-finish_date = date.fromtimestamp(parse_date(finish_date) / 1000)
-interval_length = (finish_date - start_date).days
-df = filtered_df.toPandas()
-def interval_rep_days(client_id):
-  ''' Даты пополнений заменяются на число дней от даты, до начала интервала '''
-  cell = df[df['client_id'] == client_id].iloc[0]['rep_dates']
-  return [(x - start_date).days for x in cell]
-
-def interval_rep_items(client_id, column_name):
-  ''' суммы пополнений, количество пополнений в день '''
-  return df[df['client_id'] == client_id].iloc[0][column_name]
-
-def client_behaviour(client_id):
-  behaviour_df = np.zeros(interval_length)
-  indices = interval_rep_days(client_id)
-  monetaries = interval_rep_items(client_id, 'per_day_monetaries')
-  behaviour_df[indices] = monetaries
-  return behaviour_df
-
-print(df)
-
 print(f'Генерация датасета с историей пополнений в файл {output_file_name}')
-behaviour_df = df[['client_id']]
-behaviour_df['replenishments_by_day'] = df['client_id'].apply(client_behaviour)
-behaviour_df.to_parquet(output_file_name, compression='gzip')
+filtered_df.write.parquet(output_file_name, mode='overwrite', compression='gzip')
+
+# Результат будет сохранён в виде:
+#    client_id                                        rep_indices                                         rep_values
+# 0          0  [4, 24, 53, 85, 112, 115, 158, 177, 189, 238, ...  [4.585403974388945e-12, 2.0735200089818858e-13...
+# 1         19                         [22, 46, 57, 88, 115, 143]  [1.4187242166718167e-10, 3.273978961550346e-11...
+# 2         26                                         [445, 599]     [1.091326320516782e-12, 1.091326320516782e-12]
+# 3         29  [11, 79, 92, 94, 169, 218, 281, 415, 466, 536,...  [9.797531117614793e-10, 1.1065167098373193e-10...
+# 4         54  [3, 18, 32, 64, 80, 95, 109, 123, 136, 156, 18...  [3.1313447941114434e-11, 3.3212508524498516e-1...
